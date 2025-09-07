@@ -1,6 +1,6 @@
 {
   "name": "tutorial-5-cqrs-eventos",
-  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.12",
+  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.12-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2.12.2": {
       "version": "28.3.2"
