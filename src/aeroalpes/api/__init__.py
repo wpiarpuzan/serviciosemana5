@@ -93,7 +93,7 @@ def create_app(configuracion={}):
     def spec():
         swag = swagger(app)
         swag['info']['version'] = "1.0"
-        swag['info']['title'] = "My API"
+        swag['info']['title'] = "MediSupply"
         return jsonify(swag)
 
     @app.route("/health")

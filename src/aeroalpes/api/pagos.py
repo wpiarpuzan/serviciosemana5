@@ -1,11 +1,13 @@
 # aeroalpes/modulos/pago/infraestructura/api.py
-from flask import Blueprint, request, Response
+from flask import Blueprint, jsonify, request, Response
 import json
 
+from aeroalpes.modulos.pagos.infraestructura.repositorios import PagoRepositorioSQLAlchemy
 from aeroalpes.seedwork.dominio.excepciones import ExcepcionDominio
 from aeroalpes.modulos.pagos.infraestructura.mapeadores import MapeadorPagoDTOJson
-from aeroalpes.modulos.pagos.aplicacion.comandos.registrar_pago import RegistrarPago
+from aeroalpes.modulos.pagos.aplicacion.comandos.registrar_pago import RegistrarPago, RegistrarPagoHandler
 from aeroalpes.seedwork.aplicacion.comandos import ejecutar_commando  # mismo patrón que reserva
+from aeroalpes.modulos.pagos.infraestructura.event_bus import publicar_evento
 
 bp = Blueprint("pagos", __name__, url_prefix="/pagos")
 
@@ -27,6 +29,9 @@ def registrar_pago_asincrono():
             medio_mask=pago_dto.medio_mask,
         )
 
-        return Response("{}", status=202, mimetype='application/json')
+        handler = RegistrarPagoHandler(PagoRepositorioSQLAlchemy(), publicar_evento)
+        pago_id = handler.handle(comando)
+
+        return Response(jsonify({"pago_id": pago_id}), status=202, mimetype='application/json')
     except ExcepcionDominio as e:
         return Response(json.dumps(dict(error=str(e))), status=400, mimetype='application/json')
