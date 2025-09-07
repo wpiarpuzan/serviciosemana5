@@ -95,6 +95,15 @@ services:
       &&  exec bin/pulsar broker"
   
   # Servicios de AeroAlpes
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: aero
+      POSTGRES_PASSWORD: aero
+      POSTGRES_DB: aeroalpes
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    profiles: ["aeroalpes", "bd"]
   aeroalpes:
     container_name: aeroalpes
     hostname: aeroalpes
@@ -107,9 +116,11 @@ services:
       SidecarDiscover: "false"
     depends_on:
       - broker
+      - postgres
     environment:
       - AEROALPES_ADDRESS=aeroalpes
       - PULSAR_ADDRESS=broker
+      - DB_URL=postgresql+psycopg2://app:app@postgres:5432/aeroalpes
     ports:
       - "5000:5000"
   adaptador:
